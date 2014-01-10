@@ -1,0 +1,85 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp"%>
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>机会事件</title>
+	
+</head>
+<body class="well">
+	
+  <div class="container" style="width:800px;background-color:white;height:600px;margin-top:70px">
+	<div class="" style="background-color:#F0F5F8;height:50px">
+		<table style="width:100%;">
+		<tbody>
+			<tr>
+				<td>
+					<div style="margin-left:20px">
+						<span style="font-size:20px"><strong><a href="">android</a></strong>的事件</span><br />
+						eason添加于昨天
+					</div>
+				</td>
+				<td width="10%">
+					<a href="">编辑</a>|
+					<a href="" class="icon icon-trash"></a>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+	
+	<div class="main" style="margin-top:20px">
+		<div class="content " style="margin-left:20px">
+			<p>qqqqqqqqqqqqqqqqqq</p>
+		</div>
+		
+		<table class="table top comments container" style="width:600px">
+			<tbody>
+				<tr id="">
+					<td width="10%">
+						<a id="">
+							<img width="80px" height="80px" src="img/girl.png" alt="">
+						</a>
+					</td>
+					<td>
+						<div class="comment" style="padding-bottom:5px;">
+							<div style="float:right">
+								<a title="删除这个评论" rel="tooltip nofollow" data-remote="true" data-method="delete" data-confirm="确定要删除这个评论吗？" class="icon icon-trash" href="/notes/781576"></a>
+							</div>
+							<div class="date">21:23</div>
+							<span class="meta">easona</span>
+							
+						</div>
+										
+						<div class="content">
+							<p>wwwwwww</p>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="10%">
+						<a id="">
+							<img width="80px" height="80px" src="img/girl.png" alt="">
+						</a>
+					</td>
+					<td>
+						<form action="" method="post">
+							<textarea name="" id="" style="width:665px" rows="3"></textarea>
+							<a href="" class="btn btn-primary pull-right">添加评论</a>
+						</form>
+						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+	
+  </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+package com.action;
+
+import java.util.List;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.TaskTypeDao;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+import com.pojo.ChanceExtra;
+import com.pojo.Task;
+import com.pojo.TaskExtra;
+import com.pojo.TaskType;
+import com.pojo.User;
+import com.service.MessageService;
+import com.service.TaskExtraService;
+import com.service.TaskService;
+import com.service.TaskTypeService;
+import com.service.UserService;
+import com.util.Time;
+
+@ParentPackage("mypackage")
+public class TaskAction extends ActionSupport{
+
+	private static final long serialVersionUID = 1L;
+	
+	@Autowired
+	private TaskService taskService;
+	@Autowired
+	private TaskTypeDao taskTypeDao;
+	@Autowired
+	private TaskTypeService taskTypeService;
+	@Autowired
+	private MessageService messageService;
+	@Autowired
+	private TaskExtraService taskExtraService;
+	@Autowired
+	private UserService userService;
+	
+	private User user=(User) ActionContext.getContext().getSession().get("user");
+	private List<Task> tasks;
+	private Task task;
+	private String task_type_id;
+	private List<TaskType> taskTypes;
+	private String task_id;
+	private String checkedOption;
+	
+	@Override
+	public void validate() {
+		
+	}
+	
+	@Action("task")
+	public String execute(){
+		tasks=taskService.getTasks(user);
+		for (TaskExtra taskExtra : taskExtraService.getTaskExtras(user)) {
+			if ("未完成".equals(taskExtra.getTask().getStatus())) {
+				tasks.add(taskExtra.getTask());
+			}
+		}
+		taskTypes=taskTypeService.getTaskTypes();
+		return "success";
+	}
+	
+	@Action(value="completetask")
+	public String getCompletedTask(){
+		tasks=taskService.getCompletedTasks(user);
+		for (TaskExtra taskExtra : taskExtraService.getTaskExtras(user)) {
+			if ("已完成".equals(taskExtra.getTask().getStatus())) {
+				tasks.add(taskExtra.getTask());
+			}
+		}
+		
+		taskTypes=taskTypeService.getTaskTypes();
+		return "success";
+	}
+	
+	@Action(value="addtask",results={@Result(type="redirectAction",name="success",params={"actionName","task"})})
+	public String addTask() throws Exception{
+		
+		task.setTaskType(taskTypeDao.findById(task_type_id));
+		task.setCreatetime(Time.getTime());
+		task.setUser(user);
+		task.setStatus("未完成");
+		
+		taskService.add(task);
+		messageService.add(user, user.getName()+"添加了任务"+task.getName(),"任务" );
+		
+		if ("all".equals(checkedOption)) {
+			List<User> users=userService.getuOtherUsers();
+			
+			for (User user : users) {
+				TaskExtra taskExtra=new TaskExtra();
+				taskExtra.setTask(task);
+				taskExtra.setUser(user);
+				
+				taskExtraService.add(taskExtra);
+			}
+		}
+		
+		return "success";
+	}
+	
+	@Action("complete")
+	public void complete(){
+		task=taskService.findById(task_id);
+		task.setStatus("已完成");
+		taskService.add(task);
+		
+		messageService.add(user, user.getName()+"修改任务"+task.getName()+"的状态为"+task.getStatus(),"任务" );
+	}
+	
+	@Action("deletetask")
+	public void deletetask(){
+		messageService.add(user, user.getName()+"删除了任务"+taskService.findById(task_id).getName(),"任务" );
+		taskService.delete(task_id);
+	}
+	
+	public void setTaskService(TaskService taskService) {
+		this.taskService = taskService;
+	}
+
+	public List<Task> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
+	}
+
+	public String getTask_type_id() {
+		return task_type_id;
+	}
+
+	public void setTask_type_id(String task_type_id) {
+		this.task_type_id = task_type_id;
+	}
+
+	public void setTaskTypeDao(TaskTypeDao taskTypeDao) {
+		this.taskTypeDao = taskTypeDao;
+	}
+
+	public List<TaskType> getTaskTypes() {
+		return taskTypes;
+	}
+
+	public void setTaskTypes(List<TaskType> taskTypes) {
+		this.taskTypes = taskTypes;
+	}
+
+	public void setTaskTypeService(TaskTypeService taskTypeService) {
+		this.taskTypeService = taskTypeService;
+	}
+
+	public String getTask_id() {
+		return task_id;
+	}
+
+	public void setTask_id(String task_id) {
+		this.task_id = task_id;
+	}
+	public void setMessageService(MessageService messageService) {
+		this.messageService = messageService;
+	}
+
+	public String getCheckedOption() {
+		return checkedOption;
+	}
+
+	public void setCheckedOption(String checkedOption) {
+		this.checkedOption = checkedOption;
+	}
+
+	public void setTaskExtraService(TaskExtraService taskExtraService) {
+		this.taskExtraService = taskExtraService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+	
+}

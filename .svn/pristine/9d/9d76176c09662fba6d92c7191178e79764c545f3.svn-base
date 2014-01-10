@@ -1,0 +1,38 @@
+package com.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.dao.CompanyCommentDao;
+import com.pojo.Company;
+import com.pojo.CompanyComment;
+import com.pojo.CompanyEvent;
+
+@Service
+@Transactional
+public class CompanyCommentService {
+
+	@Autowired
+	private CompanyCommentDao commentDao;
+
+	public void setCommentDao(CompanyCommentDao commentDao) {
+		this.commentDao = commentDao;
+	}
+	
+	public List<CompanyComment> getCompanyComments(CompanyEvent companyEvent){
+		return commentDao.getCompanyComments(companyEvent);
+	}
+	
+	public void add(CompanyComment companyComment){
+		commentDao.save(companyComment);
+	}
+	
+	public void del(String id){
+		commentDao.delete(id);
+	}
+	
+}

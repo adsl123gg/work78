@@ -1,0 +1,415 @@
+package com.action;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.ChanceTypeDao;
+import com.opensymphony.xwork2.ActionContext;
+import com.pojo.Chance;
+import com.pojo.ChanceComment;
+import com.pojo.ChanceEvent;
+import com.pojo.ChanceExtra;
+import com.pojo.ChanceType;
+import com.pojo.User;
+import com.service.ChanceCommentService;
+import com.service.ChanceEventService;
+import com.service.ChanceExtraService;
+import com.service.ChanceService;
+import com.service.ChanceTypeService;
+import com.util.Time;
+
+@ParentPackage("mypackage")
+public class ChanceAction implements SessionAware{
+
+	@Autowired
+	private ChanceService chanceService;
+	@Autowired
+	private ChanceTypeDao chanceTypeDao;
+	@Autowired
+	private ChanceEventService chanceEventService;
+	@Autowired
+	private ChanceCommentService chanceCommentService;
+	@Autowired
+	private ChanceExtraService chanceExtraService;
+	@Autowired
+	private ChanceTypeService chanceTypeService;
+	
+	private Map<String, Object> session;
+	private List<Chance> chances;
+	private User user=(User) ActionContext.getContext().getSession().get("user");
+	private Chance chance;
+	private Chance chanc;
+	private String chanceType;
+	private String chance_id;
+	private List<ChanceEvent> chanceEvents;
+	private String chanceEventInfo;
+	private ChanceEvent chanceEvent;
+	private String chance_event_id;
+	private String chance_event_info;
+	private List<ChanceComment> chanceComments;
+	private ChanceComment chanceComment;
+	private String chanceComment_id;
+	private String chanceStatus;
+	private List<ChanceType> chanceTypes;
+	private String chanceTypeId;
+	private String message;
+	private ChanceType ct;
+
+	public void setChanceService(ChanceService chanceService) {
+		this.chanceService = chanceService;
+	}
+	
+	@Action("chance")
+	public String execute(){
+		chances=chanceService.getChances(user);
+		//chances.addAll(chanceExtraService.getChanceExtras(user));
+		for (ChanceExtra chanceExtra : chanceExtraService.getChanceExtras(user)) {
+			chances.add(chanceExtra.getChance());
+		}
+		return "success";
+	}
+	
+	@Action("toaddchance")
+	public String toAddChance(){
+		chanceTypes=chanceTypeDao.findAll();
+		return "success";
+	}
+	
+	@Action(value="toeditchance")
+	public String editChance(){
+		chance=chanceService.findById(chance_id);
+		chanceTypes=chanceTypeDao.findAll();
+		chanceTypes.remove(chance.getChanceType());
+		return "success";
+	}
+	
+	@Action(value="addchance",results={@Result(type="redirectAction",name="success",params={"actionName","chance"})})
+	public String addChance(){
+		chance.setChanceType(chanceTypeDao.findById(chanceType));
+		chance.setCreatetime(Time.getTime());
+		chance.setStatus("¸ú×Ù");
+		chance.setUser(user);
+		
+		chanceService.addChance(chance);
+		
+		return "success";
+	}
+	
+	@Action(value="updatechance",results={@Result(type="redirectAction",name="success",params={"actionName","chance-event","chance_id","${chance_id}"})})
+	public String updateChance(){
+		chance=chanceService.findById(chance_id);
+		chance.setChanceType(chanceTypeDao.findById(chanceType));
+		chance.setInfo(chanc.getInfo());
+		chance.setName(chanc.getName());
+		chance.setMoney(chanc.getMoney());
+		
+		chanceService.addChance(chance);
+		
+		return "success";
+	}
+	
+	@Action("chance-event")
+	public String chanceevent(){
+		
+		chance=chanceService.findById(chance_id);
+		
+		session.put("chance", chance);
+		
+		chanceEvents=chanceEventService.getChanceEvents(chance);
+		return "success";
+	}
+
+	@Action(value="addchancevent",results={@Result(type="redirectAction",name="success",params={"actionName","chance-event","chance_id","${chance_id}"})})
+	public String addChancEvent(){
+		chance=chanceService.findById(chance_id);
+		
+		chanceEvent=new ChanceEvent();
+		chanceEvent.setCreatetime(Time.getTime());
+		chanceEvent.setInfo(chanceEventInfo);
+		chanceEvent.setChance(chance);
+		chanceEvent.setUser(user);
+		
+		chanceEventService.add(chanceEvent);
+		return "success";
+	}
+	
+	@Action("chance-event-edit")
+	public String toChanceEventEdit(){
+		chanceEvent=chanceEventService.findById(chance_event_id);
+		return "success";
+	}
+	
+	@Action(value="updateChanceEvent",results={@Result(type="redirectAction",name="success",params={"actionName","chance-event","chance_id","${chance_id}"})})
+	public String updateChanceEvent(){
+		chanceEvent=chanceEventService.findById(chance_event_id);
+		chanceEvent.setInfo(chance_event_info);
+		chanceEventService.add(chanceEvent);
+		return "success";
+	}
+	
+	@Action(value="chance-event-del")
+	public void delChanceEvent(){
+		chanceEvent=chanceEventService.findById(chance_event_id);
+		chanceComments=chanceCommentService.getChanceComments(chanceEvent);
+		for (ChanceComment chanceComment : chanceComments) {
+			chanceCommentService.delete(chanceComment.getId());
+		}
+		
+		chanceEventService.delete(chance_event_id);
+		
+	}
+	
+	@Action("chance-event-comment")
+	public String toChanceEventComment(){
+		chanceEvent=chanceEventService.findById(chance_event_id);
+		chanceComments=chanceCommentService.getChanceComments(chanceEvent);
+		
+		return "success";
+	}
+	
+	@Action(value="addchancecomment",results={@Result(type="redirectAction",name="success",params={"actionName","chance-event-comment","chance_event_id","${chance_event_id}"})})
+	public String addChanceComment(){
+		chanceEvent=chanceEventService.findById(chance_event_id);
+		chanceComment.setChanceEvent(chanceEvent);
+		chanceComment.setCreatetime(Time.getTime());
+		chanceComment.setUser(user);
+		
+		chanceCommentService.add(chanceComment);
+		
+		return "success";
+	}
+	
+	@Action(value="deletechancecomment",results={@Result(type="redirectAction",name="success",params={"actionName","chance-event-comment","chance_event_id","${chance_event_id}"})})
+	public String delChanceComment(){
+		chanceCommentService.delete(chanceComment_id);
+		
+		return "success";
+	}
+	
+	@Action(value="changeChanceStatus")
+	public void changeChanceStatus() throws Exception{
+		chance=chanceService.findById(chance_id);
+		System.out.println(chanceStatus);
+		if ("success".equals(chanceStatus)) {
+			chance.setStatus("³É¹¦");
+		}else if ("fail".equals(chanceStatus)) {
+			chance.setStatus("Ê§°Ü");
+		}else if ("none".equals(chanceStatus)) {
+			chance.setStatus("¸ú×Ù");
+		}
+		chanceService.addChance(chance);
+		//return "success";
+	}
+	
+	@Action(value="toeditChanceType")
+	public String toEditChanceType(){
+		chanceTypes=chanceTypeDao.findAll();
+		return "success";
+	}
+	
+	@Action(value="addChanceType",results={@Result(type="redirectAction",name="success",params={"actionName","toeditChanceType"})})
+	public String addChanceType(){
+		ChanceType chanceType=new ChanceType();
+		chanceType.setName(this.chanceType);
+		chanceType.setColor("#F3F1EC");
+		chanceTypeService.add(chanceType);
+		
+		return "success";
+	}
+	
+
+	@Action(value="delChanceType",results={@Result(type="redirectAction",name="success",params={"actionName","toeditChanceType","message","${message}"})})
+	public String delChanceType(){
+		try {
+			chanceTypeService.delete(chanceTypeId);
+		} catch (RuntimeException e) {
+			message="10001";
+		}
+		return "success";
+	}
+	
+	@Action(value="updateChanceType",results={@Result(type="redirectAction",name="success",params={"actionName","toaddchance"})})
+	public String updateChanceType(){
+		String[] ids=ct.getId().split(",");
+		String[] colors=ct.getColor().split(",");
+		String[] names=ct.getName().split(",");
+		
+		for (int i = ids.length-1; i >=0; i--) {
+			ct=chanceTypeService.getChanceType(ids[i].trim());
+			ct.setColor(colors[i]);
+			ct.setName(names[i]);
+			chanceTypeService.add(ct);
+		}
+		
+		return "success";
+	}
+	
+	
+	public Chance getChance() {
+		return chance;
+	}
+
+	public void setChance(Chance chance) {
+		this.chance = chance;
+	}
+
+	public String getChanceType() {
+		return chanceType;
+	}
+
+	public void setChanceType(String chanceType) {
+		this.chanceType = chanceType;
+	}
+
+	public List<Chance> getChances() {
+		return chances;
+	}
+
+	public void setChances(List<Chance> chances) {
+		this.chances = chances;
+	}
+
+	public String getChance_id() {
+		return chance_id;
+	}
+
+	public void setChance_id(String chance_id) {
+		this.chance_id = chance_id;
+	}
+
+	public List<ChanceEvent> getChanceEvents() {
+		return chanceEvents;
+	}
+
+	public void setChanceEvents(List<ChanceEvent> chanceEvents) {
+		this.chanceEvents = chanceEvents;
+	}
+
+	public String getChanceEventInfo() {
+		return chanceEventInfo;
+	}
+
+	public void setChanceEventInfo(String chanceEventInfo) {
+		this.chanceEventInfo = chanceEventInfo;
+	}
+
+	public String getChance_event_id() {
+		return chance_event_id;
+	}
+
+	public void setChance_event_id(String chance_event_id) {
+		this.chance_event_id = chance_event_id;
+	}
+
+	public ChanceEvent getChanceEvent() {
+		return chanceEvent;
+	}
+
+	public void setChanceEvent(ChanceEvent chanceEvent) {
+		this.chanceEvent = chanceEvent;
+	}
+
+	public void setSession(Map<String, Object> session) {
+		this.session=session;
+	}
+
+	public String getChance_event_info() {
+		return chance_event_info;
+	}
+
+	public void setChance_event_info(String chance_event_info) {
+		this.chance_event_info = chance_event_info;
+	}
+
+	public List<ChanceComment> getChanceComments() {
+		return chanceComments;
+	}
+
+	public void setChanceComments(List<ChanceComment> chanceComments) {
+		this.chanceComments = chanceComments;
+	}
+
+	public ChanceComment getChanceComment() {
+		return chanceComment;
+	}
+
+	public void setChanceComment(ChanceComment chanceComment) {
+		this.chanceComment = chanceComment;
+	}
+
+	public String getChanceComment_id() {
+		return chanceComment_id;
+	}
+
+	public void setChanceComment_id(String chanceComment_id) {
+		this.chanceComment_id = chanceComment_id;
+	}
+
+	public Chance getChanc() {
+		return chanc;
+	}
+
+	public void setChanc(Chance chanc) {
+		this.chanc = chanc;
+	}
+
+	public String getChanceStatus() {
+		return chanceStatus;
+	}
+
+	public void setChanceStatus(String chanceStatus) {
+		this.chanceStatus = chanceStatus;
+	}
+
+	public List<ChanceType> getChanceTypes() {
+		return chanceTypes;
+	}
+
+	public void setChanceTypes(List<ChanceType> chanceTypes) {
+		this.chanceTypes = chanceTypes;
+	}
+
+	public String getChanceTypeId() {
+		return chanceTypeId;
+	}
+
+	public void setChanceTypeId(String chanceTypeId) {
+		this.chanceTypeId = chanceTypeId;
+	}
+
+	public void setChanceTypeService(ChanceTypeService chanceTypeService) {
+		this.chanceTypeService = chanceTypeService;
+	}
+
+	public void setChanceTypeDao(ChanceTypeDao chanceTypeDao) {
+		this.chanceTypeDao = chanceTypeDao;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public ChanceType getCt() {
+		return ct;
+	}
+
+	public void setCt(ChanceType ct) {
+		this.ct = ct;
+	}
+
+	
+
+
+	
+	
+}

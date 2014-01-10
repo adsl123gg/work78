@@ -1,0 +1,81 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp" %>
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>任务</title>
+	
+</head>
+<body>
+	
+  <div class="row container" style="margin-top:70px;width:800px">
+	  <div class="">
+		<div class="" style="background-color:#F0F5F8">
+			<div >
+				<h2 style="display:inline">联系人</h2>
+			</div>
+		</div>
+		
+		<div class="">
+		  <table class="table" >
+			
+			<tbody class="container">
+				<!-- 联系人 -->
+				<c:forEach items="${contacts}" var="contact">
+					<tr>
+						<td width="4%">
+							<input type="checkbox" name="" id="" />
+						</td>
+						<td width="10%">
+							<img alt="" src="img/${contact.avatar}">
+							<a href="tocontact.action?contact_id=${contact.id}">${contact.name}</a>
+						</td>
+						<td width="20%">
+							
+						</td>
+						<td width="25%">
+							<span class="label">
+								
+								<c:forEach items="${contact.bookMarkContacts}" var="bookmarkContact">
+									${bookmarkContact.bookMark.content}
+								</c:forEach>
+							</span>
+						</td>
+					</tr>
+				</c:forEach>
+				
+				<!-- 公司 -->
+				<c:forEach items="${companies}" var="company">
+					<tr>
+						<td width="4%">
+							<input type="checkbox" name="" id="" />
+						</td>
+						<td width="10%">
+							<img alt="" src="img/${company.avatar}">
+							<a href="">${company.name}</a> 
+						</td>
+						<td width="20%">
+							
+						</td>
+						<td width="25%">
+							<span class="label">
+								
+								<c:forEach items="${company.bookMarkCompanies}" var="bookmarkCompany">
+									${bookmarkCompany.bookMark.content}
+								</c:forEach>
+							</span>
+						</td>
+					</tr>
+				</c:forEach>
+					
+			</tbody>
+		  </table>
+		</div>
+	</div>
+
+ </div>
+
+</body>
+</html>

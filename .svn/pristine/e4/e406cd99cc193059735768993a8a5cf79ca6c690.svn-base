@@ -1,0 +1,49 @@
+package com.dao;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.core.BaseDao;
+import com.pojo.Chance;
+import com.pojo.Company;
+import com.pojo.Contact;
+import com.pojo.User;
+
+@Repository
+public class ChanceDao extends BaseDao<Chance, String>{
+	
+	public List<Chance> getChances(User user){
+		Criteria criteria=getSession().createCriteria(Chance.class);
+		criteria.add(Restrictions.eq("user", user));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		criteria.addOrder(Order.desc("createtime"));
+		List<Chance> chances=criteria.list();
+		
+		return chances;
+	}
+
+	public List<Chance> getContactChances(Contact contact) {
+		Criteria criteria=getSession().createCriteria(Chance.class);
+		criteria.add(Restrictions.eq("contact", contact));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		criteria.addOrder(Order.desc("createtime"));
+		List<Chance> chances=criteria.list();
+		
+		return chances;
+	}
+	
+	public List<Chance> getCompanyChances(Company company) {
+		Criteria criteria=getSession().createCriteria(Chance.class);
+		criteria.add(Restrictions.eq("company", company));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		criteria.addOrder(Order.desc("createtime"));
+		List<Chance> chances=criteria.list();
+		
+		return chances;
+	}
+	
+}

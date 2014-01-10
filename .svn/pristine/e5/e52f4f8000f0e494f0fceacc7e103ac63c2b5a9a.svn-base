@@ -1,0 +1,42 @@
+package com.pojo;
+
+public class CompanyComment {
+
+	private String id;
+	private String content;
+	private String company_event_id;
+	private String createtime;
+	private String user_id;
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getCompany_event_id() {
+		return company_event_id;
+	}
+	public void setCompany_event_id(String company_event_id) {
+		this.company_event_id = company_event_id;
+	}
+	public String getCreatetime() {
+		return createtime;
+	}
+	public void setCreatetime(String createtime) {
+		this.createtime = createtime;
+	}
+	public String getUser_id() {
+		return user_id;
+	}
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
+	}
+	
+}

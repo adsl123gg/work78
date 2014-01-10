@@ -1,0 +1,26 @@
+package com.dao;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.core.BaseDao;
+import com.pojo.Contact;
+import com.pojo.ContactEvent;
+import com.pojo.User;
+
+@Repository
+public class ContactDao extends BaseDao<Contact, String>{
+
+	public List<Contact> getContacts(User user) {
+		Criteria criteria=getSession().createCriteria(Contact.class);
+		criteria.add(Restrictions.eq("user", user));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		List<Contact> contacts=criteria.list();
+		
+		return contacts;
+	}
+	
+}

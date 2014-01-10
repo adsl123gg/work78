@@ -1,0 +1,27 @@
+package com.dao;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.core.BaseDao;
+import com.pojo.Company;
+import com.pojo.CompanyComment;
+import com.pojo.CompanyEvent;
+import com.pojo.User;
+
+@Repository
+public class CompanyCommentDao extends BaseDao<CompanyComment, String>{
+
+	public List<CompanyComment> getCompanyComments(CompanyEvent companyEvent) {
+		Criteria criteria=getSession().createCriteria(CompanyComment.class);
+		criteria.add(Restrictions.eq("companyEvent", companyEvent));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		List<CompanyComment> companies=criteria.list();
+		
+		return companies;
+	}
+	
+}

@@ -1,0 +1,132 @@
+package com.action;
+
+import java.util.List;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.TaskTypeDao;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+import com.pojo.Task;
+import com.pojo.TaskType;
+import com.pojo.User;
+import com.service.TaskService;
+import com.service.TaskTypeService;
+import com.util.Time;
+
+public class TaskAction extends ActionSupport{
+
+	private static final long serialVersionUID = 1L;
+	
+	@Autowired
+	private TaskService taskService;
+	@Autowired
+	private TaskTypeDao taskTypeDao;
+	@Autowired
+	private TaskTypeService taskTypeService;
+	
+	private User user=(User) ActionContext.getContext().getSession().get("user");
+	private List<Task> tasks;
+	private Task task;
+	private String task_type_id;
+	private List<TaskType> taskTypes;
+	private String task_id;
+	
+	@Override
+	public void validate() {
+		
+	}
+	
+	@Action("task")
+	public String execute(){
+		tasks=taskService.getTasks(user);
+		taskTypes=taskTypeService.getTaskTypes();
+		return "success";
+	}
+	
+	@Action(value="completetask")
+	public String getCompletedTask(){
+		tasks=taskService.getCompletedTasks(user);
+		taskTypes=taskTypeService.getTaskTypes();
+		return "success";
+	}
+	
+	@Action(value="addtask",results={@Result(type="redirectAction",name="success",params={"actionName","task"})})
+	public String addTask() throws Exception{
+		
+		task.setTaskType(taskTypeDao.findById(task_type_id));
+		task.setCreatetime(Time.getTime());
+		task.setUser(user);
+		task.setStatus("未完成");
+		
+		taskService.add(task);
+		
+		return "success";
+	}
+	
+	@Action("complete")
+	public void complete(){
+		task=taskService.findById(task_id);
+		task.setStatus("已完成");
+		taskService.add(task);
+	}
+	
+	@Action("deletetask")
+	public void deletetask(){
+		taskService.delete(task_id);
+	}
+	
+	public void setTaskService(TaskService taskService) {
+		this.taskService = taskService;
+	}
+
+	public List<Task> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
+	}
+
+	public String getTask_type_id() {
+		return task_type_id;
+	}
+
+	public void setTask_type_id(String task_type_id) {
+		this.task_type_id = task_type_id;
+	}
+
+	public void setTaskTypeDao(TaskTypeDao taskTypeDao) {
+		this.taskTypeDao = taskTypeDao;
+	}
+
+	public List<TaskType> getTaskTypes() {
+		return taskTypes;
+	}
+
+	public void setTaskTypes(List<TaskType> taskTypes) {
+		this.taskTypes = taskTypes;
+	}
+
+	public void setTaskTypeService(TaskTypeService taskTypeService) {
+		this.taskTypeService = taskTypeService;
+	}
+
+	public String getTask_id() {
+		return task_id;
+	}
+
+	public void setTask_id(String task_id) {
+		this.task_id = task_id;
+	}
+
+}

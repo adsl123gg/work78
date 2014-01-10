@@ -1,0 +1,87 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp" %>
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+</head>
+<body style="background-color:#F3F1EC">
+	
+  <div class="container" style="width:800px;background-color:white;height:500px;margin-top:70px">
+	<div class="" style="background-color:#F0F5F8;height:50px">
+		<div style="font-size:22px;padding:16px 0px 0px 13px">机会分类</div>
+	</div>
+	
+	<div class="main container" style="width:750px">
+		<p style="margin-top:20px">修改分类会影响到同事们的机会。比如，如果您将“设计”改为“LOGO设计”，所有分类为“设计”的机会都将改为“LOGO设计”。 请确认您的修改会通知到所有同事。</p>
+		<div class="new">
+			<form id="addform" action="addChanceType.action" class="well form-inline" method="post" >
+				<input type="text" name="chanceType" id="" />
+				<button id="add" class="btn" value="">添加</button>
+			</form>
+		</div>
+		<form id="updateform" action="updateChanceType.action" method="post">
+			<table class="table crm-table">
+				<tbody>
+					<c:if test="${message=='10001'}">
+						<div class="alert alert-error">
+						     该机会类型被使用，无法删除！	
+						</div>			
+					</c:if>
+					
+					<c:forEach items="${chanceTypes}" var="chanceType">
+						<tr>
+							<td width="30%">
+								<input type="hidden" name="ct.id" value="${chanceType.id}"/>
+								<input style="width:175px" name="ct.color" id="${chanceType.id}" type="text" value="${chanceType.color}" class="iColorPicker" />
+							</td>
+							<td width="60%">
+								<input type="text" name="ct.name" style="width:70px" value="${chanceType.name}" /> 
+							</td>
+							<td width="10%">
+								<a class="icon icon-trash"  href="delChanceType.action?chanceTypeId=${chanceType.id}" data-original-title="删除这个分类"></a>
+							</td>
+							
+						</tr>
+					</c:forEach>
+					<tr>
+						
+					</tr>
+				</tbody>
+				
+			</table>
+			<button id="update" class="btn">完成编辑，返回</button>
+		</form>
+		
+		
+	</div>
+	
+  </div>
+  
+  <script type="text/javascript">
+		$(document).ready(function(){
+			$("#add").click(function(){
+				$("#addform").submit();
+			});
+			
+			$("#update").click(function(){
+				$("#updateform").submit();
+				/* var table=$(this).parent().find("table");
+				var inputs=table.find("input");
+				alert(inputs[0].attr());
+				var ss=new Array(); */
+				/* for(var i=0;i<inputs.length;i++){
+					ss[i]=inputs[i].attr();
+					alert(ss[i]);
+				} */
+				
+				
+				
+			});
+			
+		});	
+  </script>
+	
+</body>
+</html>

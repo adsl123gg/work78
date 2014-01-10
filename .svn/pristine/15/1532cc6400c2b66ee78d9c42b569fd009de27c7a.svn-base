@@ -1,0 +1,100 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp"%>
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>机会事件</title>
+	
+</head>
+<body class="well">
+	
+  <div class="container" style="width:800px;background-color:white;height:600px;margin-top:70px">
+	<div class="" style="background-color:#F0F5F8;height:50px">
+		<table style="width:100%;">
+		<tbody>
+			<tr>
+				<td>
+					<div style="margin-left:20px">
+						<span style="font-size:20px"><strong><a href="">${company.name}</a></strong>的事件</span><br />
+						${companyEvent.user.name} 添加于 ${companyEvent.createtime }
+					</div>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+	
+	<div class="main" style="margin-top:20px">
+		<div class="content " style="margin-left:20px">
+			<p>${companyEvent.info}</p>
+		</div>
+		
+		<table class="table top comments container" style="width:600px">
+			<tbody>
+				<c:forEach items="${companyComments}" var="companyComment">
+					<tr >
+						<td width="10%">
+							<a id="">
+								<img width="80px" height="80px" src="img/${companyComment.user.avatar}" alt="">
+							</a>
+						</td>
+						<td>
+							<div class="comment" style="padding-bottom:5px;">
+								<div style="float:right">
+									<a title="删除这个评论" href="javascript:;" onclick="del(this)" id="${companyComment.id}" class="icon icon-trash"></a>
+								</div>
+								<div class="date">${companyComment.createtime}</div>
+								<span class="meta">${companyComment.user.name}</span>
+								
+							</div>
+											
+							<div class="content">
+								<p>${companyComment.content}</p>
+							</div>
+						</td>
+					</tr>
+				</c:forEach>
+				
+				<tr>
+					<td width="10%">
+						<a id="">
+							<img width="80px" height="80px" src="img/${user.avatar}" alt="">
+						</a>
+					</td>
+					<td>
+						<form action="addcompanycomment.action" id="form" method="post">
+							<input type="hidden" value="${companyEvent.id}" name="companyEventId"/>
+							<textarea name="companyComment.content" id="companyComment" style="width:665px" rows="3"></textarea>
+							<button type="button" id="btn" class="btn btn-primary pull-right">添加评论</button>
+							<a class="btn pull-right" href="tocompany.action?companyid=${company.id}">返回</a>
+						</form>
+						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+	
+  </div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#btn").click(function(){
+				if($("#companyComment").val()!=''){
+					$("#form").submit();
+				}
+			});
+		});
+		
+		function del(obj){
+			var a=$(obj);
+			a.parent().parent().parent().parent().remove();
+			$.get("delcompanycomment.action",{"companycommentid":a.attr("id")});
+		}
+	</script>
+
+</body>
+</html>

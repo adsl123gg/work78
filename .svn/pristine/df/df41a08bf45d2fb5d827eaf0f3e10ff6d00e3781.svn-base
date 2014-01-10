@@ -1,0 +1,26 @@
+package com.dao;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.core.BaseDao;
+import com.pojo.Chance;
+import com.pojo.ChanceComment;
+import com.pojo.ChanceEvent;
+import com.pojo.User;
+
+@Repository
+public class ChanceCommentDao extends BaseDao<ChanceComment, String>{
+	
+	public List<ChanceComment> getChances(ChanceEvent chanceEvent){
+		Criteria criteria=getSession().createCriteria(ChanceComment.class);
+		criteria.add(Restrictions.eq("chanceEvent", chanceEvent));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); 
+		List<ChanceComment> chanceComments=criteria.list();
+		
+		return chanceComments;
+	}
+}

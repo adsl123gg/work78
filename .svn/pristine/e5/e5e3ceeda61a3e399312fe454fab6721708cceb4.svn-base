@@ -1,0 +1,38 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp"%>
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>机会事件</title>
+	
+</head>
+<body class="well">
+	
+  <div class="container" style="width:800px;background-color:white;height:600px;margin-top:70px">
+	<div class="" style="background-color:#F0F5F8;height:50px">
+		
+		<div style="padding-top:10px">
+			<span style="font-size:20px;">编辑<strong> <a href="">money</a> </strong>的事件 </span>  
+		</div>
+		
+	</div>
+	
+	<div class="main" style="">
+		<div class="container" style="margin-left:20px;margin-top:20px;width:735px">
+			<textarea name="" id="" style="width:735px" rows="4"></textarea>
+			<br />
+			
+			<a href="" class="btn btn-primary pull-right">保存修改</a>
+			<a href="" class="btn pull-right" style="margin-right:10px">取消</a>
+		</div>
+		
+	</div>
+	
+  </div>
+
+
+
+</body>
+</html>

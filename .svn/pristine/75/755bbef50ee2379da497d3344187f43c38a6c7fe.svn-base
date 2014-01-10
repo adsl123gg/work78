@@ -1,0 +1,148 @@
+package com.action;
+
+import java.util.List;
+import java.util.Set;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.pojo.BookMarkContact;
+import com.pojo.Company;
+import com.pojo.Contact;
+import com.pojo.ContactEvent;
+import com.pojo.User;
+import com.service.CompanyService;
+import com.service.ContactEventservice;
+import com.service.ContactService;
+import com.util.Time;
+
+public class ContactsAction {
+
+	@Autowired
+	private ContactService contactService;
+	@Autowired
+	private ContactEventservice contactEventservice;
+	@Autowired
+	private CompanyService companyService;
+
+	private User user=(User) ActionContext.getContext().getSession().get("user");
+	private List<Contact> contacts;
+	private List<Company> companies;
+	private String contact_id;
+	private Contact contact;
+	private Set<BookMarkContact> bookMarkContacts;
+	private String contactEventInfo;
+	private ContactEvent contactEvent;
+	private List<ContactEvent> contactEvents;
+
+	public void setContactService(ContactService contactService) {
+		this.contactService = contactService;
+	}
+	
+	@Action("contacts")
+	public String execute(){
+		contacts=contactService.getContacts(user);
+		companies=companyService.getCompanies(user);
+		return "success";
+	}
+	
+	@Action("tocontact")
+	public String tocontact(){
+		contact=contactService.findById(contact_id);
+		bookMarkContacts=contact.getBookMarkContacts();
+		contactEvents=contactEventservice.getContactEvents(user);
+		System.out.println(contactEvents.size()+"           qqqqqqqq");
+		return "success";
+	}
+	
+	@Action(value="addContactEventInfo",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String addContactEventInfo(){
+		contact=contactService.findById(contact_id);
+		contactEvent=new ContactEvent();
+		contactEvent.setContact(contact);
+		contactEvent.setCreatetime(Time.getTime());
+		contactEvent.setInfo(contactEventInfo);
+		contactEvent.setUser(user);
+		
+		contactEventservice.add(contactEvent);
+		
+		return "success";
+	}
+
+
+	
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+	public List<Company> getCompanies() {
+		return companies;
+	}
+
+	public void setCompanies(List<Company> companies) {
+		this.companies = companies;
+	}
+
+	public String getContact_id() {
+		return contact_id;
+	}
+
+	public void setContact_id(String contact_id) {
+		this.contact_id = contact_id;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
+	}
+
+	public Set<BookMarkContact> getBookMarkContacts() {
+		return bookMarkContacts;
+	}
+
+	public void setBookMarkContacts(Set<BookMarkContact> bookMarkContacts) {
+		this.bookMarkContacts = bookMarkContacts;
+	}
+
+	public String getContactEventInfo() {
+		return contactEventInfo;
+	}
+
+	public void setContactEventInfo(String contactEventInfo) {
+		this.contactEventInfo = contactEventInfo;
+	}
+
+	public ContactEvent getContactEvent() {
+		return contactEvent;
+	}
+
+	public void setContactEvent(ContactEvent contactEvent) {
+		this.contactEvent = contactEvent;
+	}
+	public void setContactEventservice(ContactEventservice contactEventservice) {
+		this.contactEventservice = contactEventservice;
+	}
+
+	public void setCompanyService(CompanyService companyService) {
+		this.companyService = companyService;
+	}
+
+	public List<ContactEvent> getContactEvents() {
+		return contactEvents;
+	}
+
+	public void setContactEvents(List<ContactEvent> contactEvents) {
+		this.contactEvents = contactEvents;
+	}
+	
+	
+	
+}

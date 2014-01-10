@@ -1,0 +1,23 @@
+package com.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dao.MessageDao;
+import com.opensymphony.xwork2.ActionSupport;
+import com.pojo.Message;
+
+@Service
+@Transactional
+public class MessageService {
+
+	@Autowired
+	private MessageDao messageDao;
+	
+	public void setMessageDao(MessageDao messageDao) {
+		this.messageDao = messageDao;
+	}
+}

@@ -1,0 +1,144 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="nav_bar.jsp" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<title></title>
+	
+</head>
+<body class="well">
+	
+	<div class="tabbable container" style="margin-top:70px;width:800px"> 
+		<div style="background-color:#F0F5F8;padding-top:20px;padding-left:20px">
+			<table width="800px">
+				<tr>
+					<td width="10%">
+						<img src="img/${company.avatar}" alt="" />
+					</td>
+					<td width="">
+						<strong style="font-size:20px">${company.name} </strong><br />
+						<c:forEach items="${bookMarkCompanies}" var="bookMarkCompany">
+							<a href="" class="label">${bookMarkCompany.bookMark.content}</a>
+						</c:forEach>
+						
+						<a href="">编辑书签</a>
+					</td>
+					<td width="10%" >
+						<a href="toeditcompany.action">编辑</a>
+						<i class="icon icon-edit"></i>
+					</td>
+				</tr>
+			</table>
+			<div class="tabbable">
+				<ul class="nav nav-tabs" style="margin-top:20px">
+					<li class="active" style=";width:100px"><a style="padding-left:35px" href="#tab1" data-toggle="tab">事件</a></li>
+					<li style="width:100px" class=""><a style="padding-left:35px" href="#tab3" data-toggle="tab">联系人 </a></li>
+					<li style="width:100px" class=""><a style="padding-left:35px" href="#tab2" data-toggle="tab">机会 </a></li>
+					
+				</ul>
+			</div>
+			
+		</div>
+		
+		
+		<div class="tab-content" style="background-color:white;margin-top:-19px;height:350px">
+			<div class="tab-pane active" id="tab1" style="margin-top:20px">
+				
+				<form class="form-horizontal" action="addcompanyevent.action" style="margin-top:20px">
+					<input type="hidden" name="companyid" value="${company.id}"/>
+					<div class="container" style="width:630px">
+					  <textarea rows="3" id="textarea" style="width:630px" name="companyEvent.info" class=""></textarea>
+					</div>
+					
+					<div class="container" style="width:630px;margin-top:20px">
+						<button class="btn btn-primary pull-right" type="submit">添加事件</button>
+					</div>
+					  
+				</form>
+				
+				<table class="table top no-hover container" style="width:670px">
+					<tbody>
+						<c:forEach items="${companyEvents}" var="companyEvent">
+							<tr>
+								<td width="10%">
+									<img src="img/text.png" alt="" />
+								</td>
+								<td>
+									${companyEvent.createtime} <br />
+									${companyEvent.user.name} 添加 <br />
+									${companyEvent.info}
+								</td>
+								<td width="20%">
+									<a href="companyeventcomment.action?companyEventId=${companyEvent.id}">评论</a>
+									<a href="editcompanyevent.action?companyEventId=${companyEvent.id}">编辑</a>
+									<a href="delcompanyevent.action?companyEventId=${companyEvent.id}&companyid=${company.id}">删除</a>
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				
+				</table>
+				
+			</div>
+			<div class="tab-pane " id="tab3" style="margin-top:20px;margin-left:20px">
+				
+				<table style="width:740px" class="container table table-striped crm-table">
+					<tbody>
+						<c:forEach items="${contacts}" var="contact">
+							<tr>
+								<td width="10%">
+									<img src="img/${contact.avatar}" alt="" />
+								</td>
+								<td width="80%"><a href="tocontact.action?contact_id=${contact.id}">${contact.name}</a> </td>
+								<td width="10%">
+									
+									<c:forEach items="${contact.bookMarkContacts}" var="bookMarkContact">
+										<i class="label">${bookMarkContact.bookMark.content}</i>
+									</c:forEach>
+									
+								</td>
+							</tr>
+						</c:forEach>
+						
+					</tbody>
+				</table>
+				<a href="toaddcompanycontact.action" style=" margin-left:21px" class="btn btn-primary">添加联系人</a>
+  
+			</div>
+			<div class="tab-pane " id="tab2" style="margin-top:20px;margin-left:20px">
+				
+				<table style="width:740px" class="container table table-striped crm-table">
+					<tbody >
+						<c:forEach items="${companyChances}" var="companyChance">
+							<tr class="">
+								<td>
+									<h4>
+										<a href="chance-event.action?chance_id=${companyChance.id}">${companyChance.name}</a>
+									</h4>
+									
+										<div class="description">${companyChance.chanceType.name}</div>
+									<div class="price">
+										${companyChance.money}
+									</div>
+								</td>
+								<td class="" width="10%">
+									<span class="label label-pending">${companyChance.status}</span>
+								</td>
+							</tr>
+							</c:forEach>
+						
+					</tbody>
+				</table>
+
+				<a class="btn btn-primary" style="margin-left:21px" href="toaddcompanychance.action">添加机会</a>
+  
+			</div>
+		
+		</div>
+		
+    </div>
+	
+</body>
+</html>

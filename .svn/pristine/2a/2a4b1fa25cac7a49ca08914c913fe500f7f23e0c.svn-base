@@ -1,0 +1,414 @@
+package com.action;
+
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.ChanceTypeDao;
+import com.opensymphony.xwork2.ActionContext;
+import com.pojo.BookMarkContact;
+import com.pojo.Chance;
+import com.pojo.ChanceType;
+import com.pojo.Company;
+import com.pojo.Contact;
+import com.pojo.ContactComment;
+import com.pojo.ContactEvent;
+import com.pojo.User;
+import com.service.BookMarkContactService;
+import com.service.ChanceService;
+import com.service.CompanyService;
+import com.service.ContactCommentService;
+import com.service.ContactEventservice;
+import com.service.ContactService;
+import com.util.Time;
+
+public class ContactsAction {
+
+	@Autowired
+	private ContactService contactService;
+	@Autowired
+	private ContactEventservice contactEventservice;
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+	private BookMarkContactService bookMarkContactService;
+	@Autowired
+	private ContactCommentService contactCommentService;
+	@Autowired
+	private ChanceService chanceService;
+	@Autowired
+	private ChanceTypeDao chanceTypeDao;
+
+	private User user=(User) ActionContext.getContext().getSession().get("user");
+	private List<Contact> contacts;
+	private List<Company> companies;
+	private String contact_id;
+	private Contact contact;
+	private List<BookMarkContact> bookMarkContacts;
+	private String contactEventInfo;
+	private ContactEvent contactEvent;
+	private List<ContactEvent> contactEvents;
+	private String contacteventid;
+	private List<ContactComment> contactComments;
+	private String contactCommentId;
+	private ContactComment contactComment;
+	private List<Chance> contactChances;
+	private Chance chance;
+	private List<ChanceType> chanceTypes;
+	private String chanceType;
+	private Company company;
+	private String companyid;
+
+	public void setContactService(ContactService contactService) {
+		this.contactService = contactService;
+	}
+	
+	@Action("contacts")
+	public String execute(){
+		contacts=contactService.getContacts(user);
+		companies=companyService.getCompanies(user);
+		return "success";
+	}
+	
+	@Action("tocontact")
+	public String tocontact(){
+		contact=contactService.findById(contact_id);
+		bookMarkContacts=bookMarkContactService.getBookMarkContacts(contact);
+		contactEvents=contactEventservice.getContactEvents(contact);
+		
+		contactChances=chanceService.getContactChances(contact);
+		
+		ActionContext.getContext().getSession().put("contact",contact);
+		
+		return "success";
+	}
+	
+	@Action(value="addContactEventInfo",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String addContactEventInfo(){
+		contact=contactService.findById(contact_id);
+		contactEvent=new ContactEvent();
+		contactEvent.setContact(contact);
+		contactEvent.setCreatetime(Time.getTime());
+		contactEvent.setInfo(contactEventInfo);
+		contactEvent.setUser(user);
+		
+		contactEventservice.add(contactEvent);
+		
+		return "success";
+	}
+
+	@Action(value="delcontactevent",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String contacteventid(){
+		contactEventservice.deleteById(contacteventid);
+		return "success";
+	}
+	
+	@Action(value="editcontactevent")
+	public String editcontactevent(){
+		contactEvent=contactEventservice.findById(contacteventid);
+		
+		return "success";
+	}
+	
+	@Action(value="updateContactEvent",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String updateContactEvent(){
+		contactEvent=contactEventservice.findById(contacteventid);
+		contactEvent.setInfo(contactEventInfo);
+		
+		contactEventservice.add(contactEvent);
+		
+		return "success";
+	}
+	
+	@Action("contacteventcomment")
+	public String contacteventcomment(){
+		contactEvent=contactEventservice.findById(contacteventid);
+		contactComments=contactCommentService.getComments(contactEvent);
+		
+		return "success";
+	}
+	
+	@Action(value="delcontacteventcomment",results={@Result(type="redirectAction",name="success",params={"actionName","contacteventcomment","contacteventid","${contacteventid}"})})
+	public String delcontacteventcomment(){
+		contactCommentService.del(contactCommentId);
+		return "success";
+	}
+	
+	@Action(value="addcontactcomment",results={@Result(type="redirectAction",name="success",params={"actionName","contacteventcomment","contacteventid","${contacteventid}"})})
+	public String addcontactcomment(){
+		contactEvent=contactEventservice.findById(contacteventid);
+		contactComment.setContactEvent(contactEvent);
+		contactComment.setCreatetime(Time.getTime());
+		contactComment.setUser(user);
+		
+		contactCommentService.add(contactComment);
+		
+		return "success";
+	}
+	
+	@Action(value="toaddcontactchance")
+	public String toaddcontactchance(){
+		contact=contactService.findById(contact_id);
+		chanceTypes=chanceTypeDao.findAll();
+		return "success";
+	}
+	
+	@Action(value="addcontactchance",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String addContactChance(){
+		contact=contactService.findById(contact_id);
+		chance.setContact(contact);
+		chance.setChanceType(chanceTypeDao.findById(chanceType));
+		chance.setUser(user);
+		chance.setStatus("¸ú×Ù");
+		
+		chanceService.addChance(chance);
+		
+		return "success";
+	}
+	
+	@Action(value="toaddcontact")
+	public String toaddcontact(){
+		
+		return "success";
+	}
+	
+	@Action(value="toaddcompany")
+	public String toaddcompany(){
+		
+		return "success";
+	}
+	
+	@Action(value="addcontact",results={@Result(type="redirectAction",name="success",params={"actionName","contacts"})})
+	public String addcontact(){
+		contact.setAvatar("contact.png");
+		contact.setCreatetime(Time.getTime());
+		contact.setUser(user);
+		
+		contactService.add(contact);
+		
+		return "success";
+	}
+	
+	@Action(value="addcompany",results={@Result(type="redirectAction",name="success",params={"actionName","contacts"})})
+	public String addcompany(){
+		company.setUser(user);
+		company.setCreatetime(Time.getTime());
+		company.setAvatar("company.png");
+		
+		companyService.add(company);
+		
+		return "success";
+	}
+	
+	@Action("toeditcontact")
+	public String toeditcontact(){
+		contact=contactService.findById(contact_id);
+		
+		return "success";
+	}
+	
+	@Action(value="updatecontact",results={@Result(type="redirectAction",name="success",params={"actionName","tocontact","contact_id","${contact_id}"})})
+	public String updatecontact(){
+		Contact c=contactService.findById(contact_id);
+		c.setAddress(contact.getAddress());
+		c.setBg_info(contact.getBg_info());
+		c.setEmail(contact.getEmail());
+		c.setIm(contact.getIm());
+		c.setName(contact.getName());
+		c.setPhone(contact.getPhone());
+		c.setPost(contact.getPost());
+		c.setWebsite(contact.getWebsite());
+		c.setWeibo(contact.getWeibo());
+		c.setCompanyname(contact.getCompanyname());
+		
+		contactService.add(c);
+		
+		return "success";
+	}
+	
+	@Action("tocompany")
+	public String tocompany(){
+		company=companyService.findById(companyid);
+		return "success";
+	}
+	
+	
+	
+	
+	
+	
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+	public List<Company> getCompanies() {
+		return companies;
+	}
+
+	public void setCompanies(List<Company> companies) {
+		this.companies = companies;
+	}
+
+	public String getContact_id() {
+		return contact_id;
+	}
+
+	public void setContact_id(String contact_id) {
+		this.contact_id = contact_id;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
+	}
+
+
+	public List<BookMarkContact> getBookMarkContacts() {
+		return bookMarkContacts;
+	}
+
+	public void setBookMarkContacts(List<BookMarkContact> bookMarkContacts) {
+		this.bookMarkContacts = bookMarkContacts;
+	}
+
+	public String getContactEventInfo() {
+		return contactEventInfo;
+	}
+
+	public void setContactEventInfo(String contactEventInfo) {
+		this.contactEventInfo = contactEventInfo;
+	}
+
+	public ContactEvent getContactEvent() {
+		return contactEvent;
+	}
+
+	public void setContactEvent(ContactEvent contactEvent) {
+		this.contactEvent = contactEvent;
+	}
+	public void setContactEventservice(ContactEventservice contactEventservice) {
+		this.contactEventservice = contactEventservice;
+	}
+
+	public void setCompanyService(CompanyService companyService) {
+		this.companyService = companyService;
+	}
+
+	public List<ContactEvent> getContactEvents() {
+		return contactEvents;
+	}
+
+	public void setContactEvents(List<ContactEvent> contactEvents) {
+		this.contactEvents = contactEvents;
+	}
+
+	public String getContacteventid() {
+		return contacteventid;
+	}
+
+	public void setContacteventid(String contacteventid) {
+		this.contacteventid = contacteventid;
+	}
+
+	public void setBookMarkContactService(
+			BookMarkContactService bookMarkContactService) {
+		this.bookMarkContactService = bookMarkContactService;
+	}
+
+	public List<ContactComment> getContactComments() {
+		return contactComments;
+	}
+
+	public void setContactComments(List<ContactComment> contactComments) {
+		this.contactComments = contactComments;
+	}
+
+	public void setContactCommentService(ContactCommentService contactCommentService) {
+		this.contactCommentService = contactCommentService;
+	}
+
+	public String getContactCommentId() {
+		return contactCommentId;
+	}
+
+	public void setContactCommentId(String contactCommentId) {
+		this.contactCommentId = contactCommentId;
+	}
+
+	public ContactComment getContactComment() {
+		return contactComment;
+	}
+
+	public void setContactComment(ContactComment contactComment) {
+		this.contactComment = contactComment;
+	}
+
+	public void setChanceService(ChanceService chanceService) {
+		this.chanceService = chanceService;
+	}
+
+	public List<Chance> getContactChances() {
+		return contactChances;
+	}
+
+	public void setContactChances(List<Chance> contactChances) {
+		this.contactChances = contactChances;
+	}
+
+	public Chance getChance() {
+		return chance;
+	}
+
+	public void setChance(Chance chance) {
+		this.chance = chance;
+	}
+
+	public List<ChanceType> getChanceTypes() {
+		return chanceTypes;
+	}
+
+	public void setChanceTypes(List<ChanceType> chanceTypes) {
+		this.chanceTypes = chanceTypes;
+	}
+
+	public void setChanceTypeDao(ChanceTypeDao chanceTypeDao) {
+		this.chanceTypeDao = chanceTypeDao;
+	}
+
+	public String getChanceType() {
+		return chanceType;
+	}
+
+	public void setChanceType(String chanceType) {
+		this.chanceType = chanceType;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public String getCompanyid() {
+		return companyid;
+	}
+
+	public void setCompanyid(String companyid) {
+		this.companyid = companyid;
+	}
+
+	
+	
+	
+	
+}

@@ -1,0 +1,53 @@
+package com.action;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.MessageDao;
+import com.opensymphony.xwork2.Action;
+import com.pojo.Message;
+import com.pojo.User;
+import com.service.MessageService;
+
+@ParentPackage("mypackage")
+public class MessageAction implements Action,SessionAware{
+
+	@Autowired
+	private MessageService messageService;
+	
+	private Map<String, Object> session;
+	private  Set<Message> messages;
+	
+	@org.apache.struts2.convention.annotation.Action("message")
+	public String execute() throws Exception {
+		User user=(User) session.get("user");
+		messages=new HashSet<Message>();
+		messages=user.getMessageSet();
+
+		return SUCCESS;
+	}
+
+	public void setMessageService(MessageService messageService) {
+		this.messageService = messageService;
+	}
+
+	public void setSession(Map<String, Object> session) {
+		this.session=session;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
+	}
+
+	public Set<Message> getMessages() {
+		return messages;
+	}
+
+
+	
+}
